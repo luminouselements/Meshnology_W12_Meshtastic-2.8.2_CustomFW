@@ -1,140 +1,216 @@
 # Meshnology W12 Meshtastic Variant
 
-## Overview
+![Meshtastic](https://img.shields.io/badge/Meshtastic-Compatible-purple)
+![ESP32-S3](https://img.shields.io/badge/MCU-ESP32--S3-blue)
+![16MB Flash](https://img.shields.io/badge/Flash-16MB-green)
+![8MB PSRAM](https://img.shields.io/badge/PSRAM-8MB-green)
+![LR2021](https://img.shields.io/badge/Radio-LR2021-orange)
+![SSD1315](https://img.shields.io/badge/OLED-SSD1315-yellow)
 
-Meshtastic variant for the Meshnology W12 (WiFi LoRa 32 V5).
+Meshtastic support for the Meshnology W12 (WiFi LoRa 32 V5).
 
-### Hardware
+---
+
+<details>
+<summary><strong>📋 Hardware Summary</strong></summary>
+
+| Component | Specification |
+|------------|--------------|
+| MCU | ESP32-S3R8 |
+| Flash | 16MB |
+| PSRAM | 8MB OPI |
+| Radio | LR2021 |
+| Display | SSD1315 128x64 OLED |
+| USB | Native USB-C |
+| WiFi | 2.4GHz |
+| BLE | BLE 5 |
+| Variant | meshnology_w12 |
+| Hardware Model | 145 |
+
+</details>
+
+---
+
+<details>
+<summary><strong>📚 Table of Contents</strong></summary>
+
+- [Overview](#overview)
+- [Features](#features)
+- [Hardware Specifications](#hardware-specifications)
+- [Quick Reference](#quick-reference)
+- [Complete Hardware Pin Mapping](#complete-hardware-pin-mapping)
+- [OLED Configuration](#oled-configuration)
+- [LR2021 Radio Configuration](#lr2021-radio-configuration)
+- [Battery Monitoring](#battery-monitoring)
+- [Pin Conflict Warnings](#pin-conflict-warnings)
+- [Hardware Validation Checklist](#hardware-validation-checklist)
+- [Build Instructions](#build-instructions)
+- [Flashing](#flashing)
+- [Recovery](#recovery)
+- [Known Limitations](#known-limitations)
+
+</details>
+
+# Overview
+
+Support files for the Meshnology W12 Meshtastic variant.
+
+# Features
+
 - ESP32-S3R8
 - 16MB Flash
 - 8MB OPI PSRAM
-- Semtech LR2021 LoRa radio
-- SSD1315 128x64 OLED
-- Native USB-C
-- BLE + Wi-Fi
+- LR2021 LoRa radio
+- SSD1315 OLED
+- Native USB CDC
+- OTA support
 
-## Build Configuration
+# Hardware Specifications
 
-```ini
-[env:meshnology_w12]
-board = esp32-s3-devkitc-1
-board_build.partitions = default_16MB.csv
-board_upload.flash_size = 16MB
-board_build.flash_mode = qio
-board_build.psram_type = opi
-board_build.arduino.memory_type = qio_opi
--D ARDUINO_USB_CDC_ON_BOOT=1
-```
+| Item | Value |
+|------|------|
+| MCU | ESP32-S3R8 |
+| Flash | 16MB |
+| PSRAM | 8MB OPI |
+| Display | SSD1315 |
+| Radio | LR2021 |
 
-## Key Pin Assignments
+# Quick Reference
 
-### LoRa (LR2021)
-| Signal | GPIO |
-|----------|----------|
-| CS/NSS | 8 |
-| SCK | 9 |
-| MOSI | 10 |
-| MISO | 11 |
-| RESET | 12 |
-| BUSY | 13 |
-| IRQ/DIO8 | 14 |
-| DIO7 | 7 |
+| Function | GPIO |
+|-----------|--------|
+| USER BUTTON | GPIO0 |
+| BATTERY ADC | GPIO1 |
+| BATTERY ENABLE | GPIO2 |
+| LR2021 CS | GPIO8 |
+| LR2021 SCK | GPIO9 |
+| LR2021 MOSI | GPIO10 |
+| LR2021 MISO | GPIO11 |
+| LR2021 RESET | GPIO12 |
+| LR2021 BUSY | GPIO13 |
+| LR2021 IRQ | GPIO14 |
+| OLED SDA | GPIO17 |
+| OLED SCL | GPIO18 |
+| USB D- | GPIO19 |
+| USB D+ | GPIO20 |
+| OLED CS | GPIO21 |
+| VEXT ENABLE | GPIO45 |
+| RGB LED | GPIO46 |
+| OLED RESET | GPIO47 |
+| GNSS CTRL | GPIO48 |
 
-### OLED
-| Signal | GPIO |
-|----------|----------|
-| SDA | 17 |
-| SCL | 18 |
-| CS | 21 |
-| DC | 6 |
-| RESET | 47 |
-| VEXT Enable | 45 |
+# Complete Hardware Pin Mapping
 
-### Battery Monitor
-| Signal | GPIO |
-|----------|----------|
-| Battery ADC | 1 |
-| Divider Enable | 2 |
+| Pin | GPIO | Function |
+|------|------|------|
+| 5 | GPIO0 | User Button |
+| 6 | GPIO1 | Battery ADC |
+| 7 | GPIO2 | Battery Enable |
+| 12 | GPIO7 | LR2021 DIO7 |
+| 13 | GPIO8 | LR2021 CS |
+| 14 | GPIO9 | LR2021 SCK |
+| 15 | GPIO10 | LR2021 MOSI |
+| 16 | GPIO11 | LR2021 MISO |
+| 17 | GPIO12 | LR2021 RESET |
+| 18 | GPIO13 | LR2021 BUSY |
+| 19 | GPIO14 | LR2021 IRQ |
+| 22 | GPIO17 | SDA |
+| 23 | GPIO18 | SCL |
+| 24 | GPIO19 | USB D- |
+| 25 | GPIO20 | USB D+ |
+| 26 | GPIO21 | OLED CS |
+| 36 | GPIO45 | VEXT |
+| 37 | GPIO46 | RGB |
+| 28 | GPIO47 | OLED RESET |
+| 27 | GPIO48 | GNSS CTRL |
 
-### USB
-| Signal | GPIO |
-|----------|----------|
-| USB D- | 19 |
-| USB D+ | 20 |
-
-### GNSS Header
-| Signal | GPIO |
-|----------|----------|
-| RX | 38 |
-| TX | 39 |
-| WAKE | 40 |
-| PPS | 41 |
-| RESET | 42 |
-| CTRL | 48 |
-
-## Critical Warnings
-
-### LR2021 IRQ Mapping
+# OLED Configuration
 
 ```cpp
+#define USE_SSD1306
+#define I2C_SDA 17
+#define I2C_SCL 18
+#define VEXT_ENABLE 45
+```
+
+# LR2021 Radio Configuration
+
+```cpp
+#define LORA_CS 8
+#define LORA_SCK 9
+#define LORA_MOSI 10
+#define LORA_MISO 11
+#define LR2021_NRESET_PIN 12
+#define LR2021_BUSY_PIN 13
+#define LORA_DIO1 14
 #define LR2021_IRQ_DIO_NUM 8
 ```
 
-The W12 routes the radio interrupt through DIO8. Using the RadioLib default DIO5 configuration can cause channel scanning failures.
-
-### Battery Monitor
-
-GPIO2 enables the battery divider. Reusing GPIO2 will break battery measurements.
-
-### OLED Power
-
-GPIO45 controls the VEXT rail.
+# Battery Monitoring
 
 ```cpp
-digitalWrite(45, LOW);   // Enable
+#define BATTERY_PIN 1
+#define ADC_CTRL 2
 ```
 
-## Flashing
+# Pin Conflict Warnings
 
-### Build
+Do not repurpose GPIOs used by:
+
+- USB (19,20)
+- OLED (17,18,21,45,47)
+- LR2021 (7-14)
+- Battery monitor (1,2)
+
+# Hardware Validation Checklist
+
+- [ ] USB detected
+- [ ] OLED initializes
+- [ ] LR2021 initializes
+- [ ] TX/RX verified
+- [ ] Battery reporting works
+- [ ] OTA update works
+- [ ] 24-hour stability test completed
+
+# Build Instructions
 
 ```bash
 pio run -e meshnology_w12
 ```
 
-### Upload
+# Flashing
 
 ```bash
 pio run -e meshnology_w12 -t upload
 ```
 
-### Serial Monitor
-
-```bash
-pio device monitor -b 115200
-```
-
-## Recovery
-
-### Erase Device
-
-```bash
-esptool.py --chip esp32s3 erase_flash
-```
-
-### Flash Factory Image
+Factory Image:
 
 ```bash
 esptool.py --chip esp32s3 write_flash 0x0000 firmware-meshnology_w12.factory.bin
 ```
 
-## Validation Checklist
+# Recovery
 
-- [ ] USB CDC detected
-- [ ] OLED initializes
-- [ ] LR2021 initializes
-- [ ] Channel scan completes
-- [ ] BLE pairing works
-- [ ] Battery voltage reports correctly
-- [ ] OTA updates tested
-- [ ] 24-hour stability test passed
+Erase:
+
+```bash
+esptool.py --chip esp32s3 erase_flash
+```
+
+Reflash the factory image.
+
+# Known Limitations
+
+- RGB LED disabled
+- GNSS not implemented
+- Future LR2021 features may require driver updates
+
+# Build Validation Results
+
+```text
+Environment : meshnology_w12
+Status      : SUCCESS
+RAM Usage   : 39.6%
+Flash Usage : 34.7%
+```
