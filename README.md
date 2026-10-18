@@ -1,4 +1,5 @@
 # Meshnology W12 Meshtastic Variant
+[Meshtastic Firmware 2.7.26.54e0d8d Beta](https://github.com/meshtastic/firmware/tree/develop/variants/esp32s3/meshnology-w12)
 
 ![Meshtastic](https://img.shields.io/badge/Meshtastic-Compatible-purple)
 ![ESP32-S3](https://img.shields.io/badge/MCU-ESP32--S3-blue)
