@@ -8,6 +8,7 @@
 ![SSD1315](https://img.shields.io/badge/OLED-SSD1315-yellow)
 
 Meshtastic support for the Meshnology W12 (WiFi LoRa 32 V5).
+![](https://wiki.meshnology.com/assets/images/w12new-03b97ecfaa4bbb52ef1a24875fbb1ca2.jpg)
 
 ---
 
